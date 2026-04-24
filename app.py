@@ -128,7 +128,9 @@ Rules:
         """Inject today's date into the system prompt so Gemini can resolve
         relative time references like 'tomorrow' or 'next Friday'."""
         today = datetime.date.today().isoformat()
-        return self.SYSTEM_PROMPT.format(today=today)
+        # Use replace() instead of format() because the prompt contains
+        # JSON examples with curly braces that confuse str.format().
+        return self.SYSTEM_PROMPT.replace("{today}", today)
 
     def parse_intent(self, user_message: str) -> dict:
         """
