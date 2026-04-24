@@ -23,7 +23,8 @@ from rich.table import Table
 from rich.panel import Panel
 from rich.prompt import Prompt
 from rich import box
-import google.generativeai as genai
+from google import genai
+from google.genai import types
 
 # ── Load environment variables from .env ─────────────────────────────────────
 load_dotenv()
@@ -48,7 +49,7 @@ SCOPES = ["https://www.googleapis.com/auth/calendar.events"]
 
 class GeminiClient:
     """
-    Wraps google-generativeai to send structured prompts and parse
+    Wraps the google-genai SDK to send structured prompts and parse
     JSON responses that describe the user's intent.
     """
 
@@ -59,13 +60,13 @@ Your job is to understand the user's message and return a STRICTLY valid JSON
 object (no markdown fences, no extra text) describing what they want to do.
 
 Possible intents:
-  ADD_TASK       – user wants to add a task / to-do item
-  LIST_TASKS     – user wants to see their tasks
-  COMPLETE_TASK  – user wants to mark a task as complete / done / finished
-  DELETE_TASK    – user wants to delete / remove a task
-  ADD_EVENT      – user wants to create a calendar event / reminder / meeting
-  LIST_EVENTS    – user wants to see upcoming calendar events
-  GENERAL_QUERY  – anything else (answer conversationally in "response" field)
+  ADD_TASK       - user wants to add a task / to-do item
+  LIST_TASKS     - user wants to see their tasks
+  COMPLETE_TASK  - user wants to mark a task as complete / done / finished
+  DELETE_TASK    - user wants to delete / remove a task
+  ADD_EVENT      - user wants to create a calendar event / reminder / meeting
+  LIST_EVENTS    - user wants to see upcoming calendar events
+  GENERAL_QUERY  - anything else (answer conversationally in "response" field)
 
 JSON schema to use for each intent:
 
@@ -110,13 +111,18 @@ Rules:
             )
             sys.exit(1)
 
-        genai.configure(api_key=GEMINI_API_KEY)
-        # Use Gemini 1.5 Flash — fast and free-tier friendly
-        self.model = genai.GenerativeModel(
-            model_name="gemini-1.5-flash",
-            system_instruction=self._build_system_prompt(),
+        # Initialise the new google-genai client
+        self.client = genai.Client(api_key=GEMINI_API_KEY)
+        self._system_prompt = self._build_system_prompt()
+
+        # Start a persistent chat session (retains history within one run)
+        self.chat = self.client.chats.create(
+            model="gemini-2.0-flash",
+            config=types.GenerateContentConfig(
+                system_instruction=self._system_prompt,
+                temperature=0.2,   # Low temperature for reliable JSON output
+            ),
         )
-        self.chat = self.model.start_chat(history=[])
 
     def _build_system_prompt(self) -> str:
         """Inject today's date into the system prompt so Gemini can resolve
