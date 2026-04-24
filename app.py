@@ -115,9 +115,13 @@ Rules:
         self.client = genai.Client(api_key=GEMINI_API_KEY)
         self._system_prompt = self._build_system_prompt()
 
+        # Model selection — override via GEMINI_MODEL env var if needed.
+        # gemini-1.5-flash has the most generous free-tier quota.
+        model = os.getenv("GEMINI_MODEL", "gemini-1.5-flash")
+
         # Start a persistent chat session (retains history within one run)
         self.chat = self.client.chats.create(
-            model="gemini-2.0-flash",
+            model=model,
             config=types.GenerateContentConfig(
                 system_instruction=self._system_prompt,
                 temperature=0.2,   # Low temperature for reliable JSON output
