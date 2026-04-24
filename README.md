@@ -21,7 +21,7 @@
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/<your-username>/AI-Driven-Task-Orchestrator.git
+git clone https://github.com/exedistrict-ux/AI-Driven-Task-Orchestrator.git
 cd AI-Driven-Task-Orchestrator
 ```
 
@@ -57,7 +57,7 @@ The project includes a comprehensive test suite in `test_app.py` that uses the s
 ```mermaid
 graph TD
     A[User Input] --> B[Gradio Web UI]
-    B --> C[Gemini 2.0 Flash]
+    B --> C[Gemini 2.5 Flash-lite]
     C --> D{Context Evaluator}
     D -->|Eligibility| E[Tailored Voting Guide]
     D -->|Process| F[Interactive FAQ]

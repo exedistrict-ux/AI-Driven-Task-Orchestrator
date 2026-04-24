@@ -106,14 +106,32 @@ Context:
             return "⚠️ **API Key Missing**: Please set the `GEMINI_API_KEY` environment variable."
         
         try:
-            # Convert Gradio history format to Gemini format
+            # Helper to extract text from Gradio message content
+            def extract_text(msg_content):
+                if isinstance(msg_content, str):
+                    return msg_content
+                elif isinstance(msg_content, list):
+                    parts = []
+                    for p in msg_content:
+                        if isinstance(p, dict) and "text" in p:
+                            parts.append(p["text"])
+                        elif isinstance(p, str):
+                            parts.append(p)
+                    return " ".join(parts)
+                elif isinstance(msg_content, dict) and "text" in msg_content:
+                    return msg_content["text"]
+                return str(msg_content)
+
+            # Convert Gradio 6.0 history format to Gemini format
             chat_history = []
-            for h in history:
-                chat_history.append({"role": "user", "parts": [{"text": h[0]}]})
-                chat_history.append({"role": "model", "parts": [{"text": h[1]}]})
+            for turn in history:
+                role = turn.get("role", "user")
+                content = extract_text(turn.get("content", ""))
+                gemini_role = "user" if role == "user" else "model"
+                chat_history.append({"role": gemini_role, "parts": [{"text": content}]})
 
             chat = self.client.chats.create(
-                model=os.getenv("GEMINI_MODEL", "gemini-2.0-flash"),
+                model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash-lite"),
                 config=types.GenerateContentConfig(
                     system_instruction=self._system_prompt,
                     temperature=0.7,
@@ -122,7 +140,8 @@ Context:
                 history=chat_history
             )
             
-            response = chat.send_message(user_message)
+            user_message_text = extract_text(user_message)
+            response = chat.send_message(user_message_text)
             return response.text
         except Exception as e:
             return f"Error: {str(e)}"
@@ -167,16 +186,19 @@ def create_demo():
                 with gr.Group():
                     gr.Markdown("### 📋 Quick Guides")
                     gr.Button("Eligibility Checker 🔍").click(
-                        fn=lambda: "To be eligible to vote in most democracies, you must be a citizen and usually at least 18 years old. Tell me your age and citizenship status for more details!",
-                        outputs=chatbot.chatbot
+                        fn=lambda h: (h or []) + [{"role": "model", "content": "To be eligible to vote in most democracies, you must be a citizen and usually at least 18 years old. Tell me your age and citizenship status for more details!"}],
+                        inputs=[chatbot.chatbot],
+                        outputs=[chatbot.chatbot]
                     )
                     gr.Button("Registration 📝").click(
-                        fn=lambda: "Registration is the first step! In most places, you can register online or at a local election office. Would you like to know about a specific country?",
-                        outputs=chatbot.chatbot
+                        fn=lambda h: (h or []) + [{"role": "model", "content": "Registration is the first step! In most places, you can register online or at a local election office. Would you like to know about a specific country?"}],
+                        inputs=[chatbot.chatbot],
+                        outputs=[chatbot.chatbot]
                     )
                     gr.Button("Voting Day Tips 🗳️").click(
-                        fn=lambda: "1. Locate your polling station in advance. 2. Carry your ID. 3. Know the voting hours. Anything specific you want to know?",
-                        outputs=chatbot.chatbot
+                        fn=lambda h: (h or []) + [{"role": "model", "content": "1. Locate your polling station in advance. 2. Carry your ID. 3. Know the voting hours. Anything specific you want to know?"}],
+                        inputs=[chatbot.chatbot],
+                        outputs=[chatbot.chatbot]
                     )
 
         gr.Markdown("---")
