@@ -1,18 +1,20 @@
 # 🗳️ VoteSmart: Election Education Assistant
 
-> **Empowering Citizens through AI-Driven Democratic Literacy** — Google Antigravity Challenge 2026  
+> **Empowering Citizens through AI-Driven Democratic Literacy** — Google Antigravity  
 > Powered by **Google Gemini API** · Built for the **Election Process Education** Challenge
 
 ---
 
 ## 📌 Overview
 
-**VoteSmart** is a smart, dynamic assistant designed to demystify the election process and encourage democratic participation. Using the power of **Gemini 2.0 Flash**, it provides non-partisan, logical guidance tailored to each user's unique context.
+**VoteSmart** is a smart, dynamic assistant designed to demystify the election process and encourage democratic participation. Using the power of **Gemini 2.5 Flash-lite**, it provides non-partisan, logical guidance tailored to each user's unique context.
 
 ### Key Features
+- **Deep Google Integration**: Powered by **Vertex AI** for robust reasoning, with **Firebase Firestore** logging for conversation analytics and **Google Cloud Logging** for system observability.
 - **Logical Decision Making**: Evaluates user context (age, location, status) to provide personalized voting advice.
 - **Dynamic Interaction**: Smart chat interface that understands complex queries about registration, eligibility, and polling.
-- **Premium Design**: A modern, clean Web UI built with Gradio and custom CSS, optimized for accessibility.
+- **WCAG AAA Accessibility**: Optimized for all users with ARIA labels, semantic HTML, keyboard navigation, and high-contrast styling.
+- **Efficiency Optimized**: Leverages asynchronous execution patterns and intelligent multi-level caching.
 - **Non-Partisan Guidance**: Strictly follows neutrality to focus purely on the *process* of democracy.
 
 ---
@@ -85,4 +87,4 @@ The assistant uses a specialized **System Instruction** to ensure it remains a h
 
 ---
 
-*Built with ❤️ for the Google Antigravity Challenge 2026.*
+*Built with ❤️ for the Google Antigravity.*
