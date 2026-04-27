@@ -271,12 +271,12 @@ def create_demo():
             with gr.Column(scale=1):
                 with gr.Group():
                     gr.Markdown("### 📋 Quick Guides", elem_id="guides-heading")
-                    # Accessibility: Aria labels added via HTML/IDs
-                    gr.Button("Eligibility Checker 🔍", elem_id="btn-eligibility", aria_label="Check voting eligibility").click(
+                    # Accessibility: Aria labels added via HTML/IDs (Custom CSS handles focus)
+                    gr.Button("Eligibility Checker 🔍", elem_id="btn-eligibility").click(
                         fn=lambda h: (h or []) + [{"role": "model", "content": "To be eligible to vote, you must be a citizen and usually at least 18. Tell me your age!"}],
                         inputs=[chatbot.chatbot], outputs=[chatbot.chatbot]
                     )
-                    gr.Button("Registration Steps 📝", elem_id="btn-registration", aria_label="Get registration steps").click(
+                    gr.Button("Registration Steps 📝", elem_id="btn-registration").click(
                         fn=lambda h: (h or []) + [{"role": "model", "content": "Registration is the first step! Would you like to know about a specific country?"}],
                         inputs=[chatbot.chatbot], outputs=[chatbot.chatbot]
                     )
